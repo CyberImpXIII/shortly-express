@@ -18,33 +18,33 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 
 app.get('/', 
-(req, res) => {
-  res.render('index');
+  (req, res) => {
+    res.render('index');
 });
 
 app.get('/create', 
-(req, res) => {
-  res.render('index');
+  (req, res) => {
+    res.render('index');
 });
 
 app.get('/links', 
-(req, res, next) => {
-  models.Links.getAll()
-    .then(links => {
-      res.status(200).send(links);
-    })
-    .error(error => {
-      res.status(500).send(error);
-    });
+  (req, res, next) => {
+    models.Links.getAll()
+      .then(links => {
+        res.status(200).send(links);
+      })
+      .error(error => {
+        res.status(500).send(error);
+      });
 });
 
 app.post('/links', 
-(req, res, next) => {
-  var url = req.body.url;
-  if (!models.Links.isValidUrl(url)) {
-    // send back a 404 if link is not valid
-    return res.sendStatus(404);
-  }
+  (req, res, next) => {
+    var url = req.body.url;
+    if (!models.Links.isValidUrl(url)) {
+      // send back a 404 if link is not valid
+      return res.sendStatus(404);
+    }
 
   return models.Links.get({ url })
     .then(link => {
@@ -77,7 +77,46 @@ app.post('/links',
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+app.get('/login', (req, res)=>{
+  res.status(200);
+  res.render('./login');
+  res.send();
+});
 
+app.get('/signup', (req, res)=>{
+  res.status(200);
+  res.render('./signup');
+  res.send();
+});
+
+app.post('/signup', (req,res) => {
+  res.status(201);
+  models.Users.create(req.body)
+  .then(()=>{
+    res.redirect('/');
+    res.send();
+  })
+  .catch(()=>{
+    res.redirect('/signup');
+    res.send();
+  })
+
+});
+
+app.post('/login', (req,res) => {
+  models.Users.get({"username": req.body.username})
+  .then((data)=>{
+  return models.Users.compare(req.body.password, data.password, data.salt)
+  })
+  .then((loggedIn)=>{
+    loggedIn ? res.redirect('/') : res.redirect('/login');
+    res.send();
+  })
+  .catch((data)=>{
+    res.redirect('/login');
+    res.send();
+  })
+});
 
 
 /************************************************************/
