@@ -20,12 +20,12 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.get('/', 
   (req, res) => {
     res.render('index');
-});
+  });
 
 app.get('/create', 
   (req, res) => {
     res.render('index');
-});
+  });
 
 app.get('/links', 
   (req, res, next) => {
@@ -36,7 +36,7 @@ app.get('/links',
       .error(error => {
         res.status(500).send(error);
       });
-});
+  });
 
 app.post('/links', 
   (req, res, next) => {
